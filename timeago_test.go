@@ -22,7 +22,7 @@ var formatReferenceTests = []struct {
 	//Lang
 	{tBase, tBase, NoMax(English), "about a second ago"},
 	{tBase, tBase, NoMax(French), "il y a environ une seconde"},
-  {tBase, tBase, NoMax(Chinese), "1 秒前"},
+	{tBase, tBase, NoMax(Chinese), "1 秒前"},
 
 	//Thresholds
 	{tBase, tBase.Add(1*time.Second + 500000000).Add(-1), NoMax(English), "about a second ago"},
@@ -66,4 +66,29 @@ func TestFormatReference(t *testing.T) {
 			t.Errorf("%d) FormatReference(%s,%s): expected '%s', actual '%s'", i+1, tt.t, tt.ref, tt.expected, actual)
 		}
 	}
+}
+
+type testData struct {
+	inpStr string
+	inpCnt int
+}
+
+func TestNbParamInFormat(t *testing.T) {
+
+	inpTestData := []testData{
+		{"testing param0", 0},
+		{"testing param1 %d", 1},
+		{"testing param2 %d %v %%", 2},
+		{"testing param3 %v  param %v param %v", 3},
+		{"testing param4 %v%v  param %b param %c param %q %v %d param %v test %t %v", 10},
+	}
+
+	for _, itm := range inpTestData {
+		t.Log("Testing with params count:", itm.inpCnt)
+		outCnt := nbParamInFormat(itm.inpStr)
+		if outCnt != itm.inpCnt {
+			t.Error("Expected: ", itm.inpCnt, " actual: ", outCnt)
+		}
+	}
+
 }
